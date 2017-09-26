@@ -175,6 +175,16 @@ public final class NVActivityIndicatorPresenter {
 
     // MARK: - Helpers
 
+    func getTopWindow() -> UIWindow? {
+        let windows = UIApplication.shared.windows
+        _ = windows.sorted { (w1, w2) -> Bool in
+            return w1.windowLevel > w2.windowLevel
+        }
+        for window in windows {
+            print(window.windowLevel)
+        }
+        return windows.last ?? UIApplication.shared.keyWindow
+    }
     private func show(with activityData: ActivityData) {
         let containerView = UIView(frame: UIScreen.main.bounds)
 
@@ -218,7 +228,7 @@ public final class NVActivityIndicatorPresenter {
             containerView.addConstraint(spacingConstraint)
         }())
 
-        guard let keyWindow = UIApplication.shared.keyWindow else { return }
+        guard let keyWindow = self.getTopWindow() else { return }
 
         keyWindow.addSubview(containerView)
         state = .showed
@@ -247,7 +257,7 @@ public final class NVActivityIndicatorPresenter {
     }
 
     private func hide() {
-        guard let keyWindow = UIApplication.shared.keyWindow else { return }
+        guard let keyWindow = self.getTopWindow() else { return }
 
         for item in keyWindow.subviews
             where item.restorationIdentifier == restorationIdentifier {
